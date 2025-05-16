@@ -14,7 +14,7 @@ class Task():
     idx:      int = None# Index of task
     proc_idx: int = None # Index of processor assinged to this task
 
-    # TODO(Pawel Hermansdorfer): 
+    # TODO(Pawel Hermansdorfer): Read from file
     is_unpredicted: bool = None
 
     children_count: int       = None
