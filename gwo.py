@@ -1,9 +1,17 @@
+from pprint import pprint
+import copy
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
 
 POPULATION_SIZE = 100
 
+animation_frames = []
+
 def CalculateFitness(x):
-    return np.sum(x ** 2)
+    result = np.sum(x ** 2)
+    return result
 
 
 def initialization (Dim,LB,UB):
@@ -28,6 +36,8 @@ def GWO(MaxT,LB,UB,Dim):
 
     l = 0
     while l<MaxT:
+        positions_copy = copy.deepcopy(positions)
+        animation_frames.append({'x': positions_copy[:,0], 'y': positions_copy[:,1]})
         for i in range (positions.shape[0]):
             BB_UB = positions[i,:]>UB 
             BB_LB = positions[i,:]<LB
@@ -80,12 +90,39 @@ def GWO(MaxT,LB,UB,Dim):
         l += 1
     return alpha_fitness, alpha_pos
 
-if __name__ == "__main__":
-    LB = -100
-    UB = 100
-    Dim = 30
-    MaxT = 100
 
-    bestfit, bestsol = GWO(MaxT,LB,UB,Dim)
-    print("Best Fitness =", bestfit)
-    print("Best Solution = ",bestsol)
+LB = -100
+UB = 100
+Dim = 2
+MaxT = 100
+
+bestfit, bestsol = GWO(MaxT,LB,UB,Dim)
+print("Best Fitness =", bestfit)
+print("Best Solution = ",bestsol)
+
+frame_idx = 0
+x = animation_frames[frame_idx]['x']
+y = animation_frames[frame_idx]['y']
+
+# Set up the figure and axis
+fig, ax = plt.subplots()
+scat = ax.scatter(x, y, s=2)
+ax.set_xlim(LB, UB)
+ax.set_ylim(LB, UB)
+
+# Update function
+def update(frame):
+    global x, y, frame_idx
+    x = animation_frames[frame_idx]['x']
+    y = animation_frames[frame_idx]['y']
+    frame_idx = (frame_idx+1) % len(animation_frames)
+
+    scat.set_offsets(np.c_[x, y])
+    return scat,
+
+# Animate
+ani = FuncAnimation(fig, update, interval=500, blit=False)
+
+plt.show()
+
+
