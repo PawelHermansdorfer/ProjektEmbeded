@@ -8,9 +8,6 @@ import random
 from pprint import pprint # pip install pprint
 
 
-print("NUIAWFBAWCVUIOVBCAWOYUVFCOUYAWVCUOYAWVODYUWVA")
-
-
 ########################################
 @dataclass
 class Task():
