@@ -10,6 +10,10 @@ from pprint import pprint # pip install pprint
 
 ########################################
 @dataclass
+class Subtask():
+    pass
+
+@dataclass
 class Task():
     idx:      int = None# Index of task
     proc_idx: int = None # Index of processor assinged to this task
@@ -24,6 +28,8 @@ class Task():
 
     costs: List[int] = field(default_factory=list) # Costs of this task per each processor
     times: List[int] = field(default_factory=list) # Times of this task per each processor
+
+    subtasks: List[Subtask] = field(default_factory=list)
 
 @dataclass
 class Proc():
