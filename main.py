@@ -10,6 +10,13 @@ from pprint import pprint # pip install pprint
 
 ########################################
 @dataclass
+class Subtask():
+    proc_idx: int
+    belongs_to_task_idx: int
+    idx: int = None
+    time: int = None
+
+@dataclass
 class Task():
     idx:      int = None# Index of task
     proc_idx: int = None # Index of processor assinged to this task
@@ -24,6 +31,9 @@ class Task():
 
     costs: List[int] = field(default_factory=list) # Costs of this task per each processor
     times: List[int] = field(default_factory=list) # Times of this task per each processor
+
+    subtasks: List[Subtask] = field(default_factory=list) # List of subtasks
+    unpredicted_subtasks: List[Subtask] = field(default_factory=list) # List for 3 subtasks for unpredicted tasks
 
 @dataclass
 class Proc():
@@ -41,7 +51,7 @@ class Chann():
     allows_procs: List[bool] = field(default_factory=list) # Bool for each processor
 
 ########################################
-GRAPH_FILE = './graf_6.txt'
+GRAPH_FILE = './test.txt'
 
 task_count = 0
 tasks = []
@@ -94,10 +104,14 @@ while line:
     # TASKS
     elif parsing_chunk == CHUNK_TASKS:
         split = line.split(' ')
-        task_idx = int(split[0][1])
+        task_label = split[0]
+        is_unpredicted = task_label.startswith("UT")
+
+        task_idx = int(''.join(filter(str.isdigit,task_label)))
         task = tasks[task_idx]
 
         task.idx = task_idx
+        task.is_unpredicted = is_unpredicted
         task.children_count = int(split[1])
 
         for child in split[2:]:
@@ -143,7 +157,6 @@ while line:
 
     line = file.readline().strip().replace('\t', ' ')
 
-
 ########################################
 ########## TEMP ########
 # These fields need to be non None to calculate cost and time
@@ -153,6 +166,17 @@ for task in tasks:
 for proc in procs:
     proc.chann_connected[0] = True
 
+tasks[6].unpredicted_subtasks = [
+    Subtask(time=10, proc_idx=0, idx=None, belongs_to_task_idx=None),
+    Subtask(time=5, proc_idx=1, idx=None, belongs_to_task_idx=None),
+    Subtask(time=5, proc_idx=1, idx=None, belongs_to_task_idx=None)
+]
+
+tasks[7].unpredicted_subtasks = [
+    Subtask(time=5, proc_idx=0, idx=None, belongs_to_task_idx=None),
+    Subtask(time=5, proc_idx=1, idx=None, belongs_to_task_idx=None),
+    Subtask(time=5, proc_idx=2, idx=None, belongs_to_task_idx=None)
+]
 ########################################
 # Calculate cost
 def get_cost():
@@ -161,8 +185,9 @@ def get_cost():
 
     # Cost of tasks
     for task in tasks:
-        tasks_per_proc[task.proc_idx] += 1
-        result += task.costs[task.proc_idx]
+        if not task.is_unpredicted:
+            tasks_per_proc[task.proc_idx] += 1
+            result += task.costs[task.proc_idx]
 
     # Cost of procs
     for proc in procs:
@@ -186,13 +211,12 @@ def get_time():
     result = 0
 
     proc_free_time   = [0 for _ in range(proc_count)]
-    tasks_to_be_done = [task for task in tasks]
+    tasks_to_be_done = [task for task in tasks if not task.is_unpredicted]
     finish_times     = [None for _ in tasks]
 
     while tasks_to_be_done:
         task = tasks_to_be_done[0]
         tasks_to_be_done.remove(task)
-
         parents_finished = True
         latest_parent_finish_idx = 0
         latest_parent_finish_time = 0
@@ -214,7 +238,17 @@ def get_time():
 
         proc_free_time[task.proc_idx] = finish_times[task.idx]
         result = max(result, finish_times[task.idx])
-    return result
+    # + time of unpredicted tasks
+    for task in tasks:
+        if task.is_unpredicted:
+            u_start_time = result
+            for sub in task.unpredicted_subtasks:
+                u_start_time = max(u_start_time, proc_free_time[sub.proc_idx])
+                u_finish_time = u_start_time + sub.time
+                proc_free_time[sub.proc_idx] = u_finish_time
+                u_start_time = u_finish_time
+            finish_times[task.idx] = u_finish_time
+    return max([t for t in finish_times if t is not None])
 
 print(f'Time: {get_time()}')
 print(f'Cost: {get_cost()}')
