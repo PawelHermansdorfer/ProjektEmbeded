@@ -9,9 +9,18 @@ from pprint import pprint # pip install pprint
 
 
 ########################################
+# CONSTANTS
+MIN_SUBTASK = 3
+MAX_SUBTASK = 6
+
+
+########################################
 @dataclass
 class Subtask():
-    pass
+    idx:            int = None # Index of subtask
+    main_task_idx:  int = None # Index of main task
+    proc_idx:       int = None # Index of processor
+    ratio:          float = None # Percent (0.0;1.0)
 
 @dataclass
 class Task():
@@ -30,6 +39,23 @@ class Task():
     times: List[int] = field(default_factory=list) # Times of this task per each processor
 
     subtasks: List[Subtask] = field(default_factory=list)
+    def get_subtask_cost(self, subtask_idx: int, proc_idx: int = None) -> int:
+        base_cost = self.costs[self._get_subtask_proc_idx(subtask_idx, proc_idx)]
+        return self._multiply_by_substract(subtask_idx, base_cost)
+    #TODO: żeby wynik był w 100% zgodny
+    # należy dla subtaska 0 policzyc koszt wszystkich pozostalych podzadan
+    # i odjąć go od całości
+
+    def get_subtask_time(self, subtask_idx: int, proc_idx: int = None) -> int:
+        base_time = self.times[self._get_subtask_proc_idx(subtask_idx, proc_idx)]
+        return self._multiply_by_substract(subtask_idx, base_time)
+
+    def _get_subtask_proc_idx(self, subtask_idx: int, proc_idx: int = None) -> int:
+        return proc_idx if proc_idx is not None else self.subtasks[subtask_idx]
+
+    def _multiply_by_substract(self, subtask_idx: int, value: int) -> int:
+        subtask = self.subtasks[subtask_idx]
+        return round(value * subtask.ratio)
 
 @dataclass
 class Proc():
@@ -158,6 +184,25 @@ for task in tasks:
 
 for proc in procs:
     proc.chann_connected[0] = True
+
+########################################
+# Create subtasks
+def create_subtasks():
+    for task in tasks:
+        if task.is_unpredicted or task.subtasks: # nieprzewidzane albo już ma podzadania
+            continue
+        num_subtasks = random.randint(2,5)
+        random_values = [random.random() for _ in range(num_subtasks)] # losuje proporcje
+        total = sum(random_values)
+        ratios = [v / total for v in random_values] # normalizuje - suma bedzie rowna 1
+
+        for i, ratio in enumerate(ratios):
+            task.subtasks.append(Subtask(
+                idx=i,
+                main_task_idx=task.idx,
+                proc_idx=task.proc_idx,
+                ratio=ratio
+            ))
 
 ########################################
 # Calculate cost
