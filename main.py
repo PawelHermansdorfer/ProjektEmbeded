@@ -281,6 +281,19 @@ def get_time():
     return max([t for t in finish_times if t is not None])
 
 create_subtasks()
+
+tasks[6].unpredicted_subtasks = [
+    Subtask(0, 3, 0, 0.04),#10
+    Subtask(1, 2, 1, 0.5),#180
+    Subtask(3, 5, 1, 0.2)#11
+]
+
+tasks[7].unpredicted_subtasks = [
+    Subtask(4, 4, 0, 0.5),#75
+    Subtask(5, 3, 1, 0.5),#110
+    Subtask(6, 1, 2, 0.5)#12
+]
+
 print(f'Time: {get_time()}')
 print(f'Cost: {get_cost()}')
 
