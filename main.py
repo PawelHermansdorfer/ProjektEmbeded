@@ -41,21 +41,6 @@ class Task():
     subtasks: List[Subtask] = field(default_factory=list) # List of subtasks
     unpredicted_subtasks: List[Subtask] = field(default_factory=list) # List for 3 subtasks for unpredicted tasks
 
-    subtasks: List[Subtask] = field(default_factory=list)
-    def get_subtask_cost(self, subtask_idx: int, proc_idx: int = None) -> int:
-        base_cost = self.costs[self._get_subtask_proc_idx(subtask_idx, proc_idx)]
-        return self._multiply_by_substract(subtask_idx, base_cost)
-
-    def get_subtask_time(self, subtask_idx: int, proc_idx: int = None) -> int:
-        base_time = self.times[self._get_subtask_proc_idx(subtask_idx, proc_idx)]
-        return self._multiply_by_substract(subtask_idx, base_time)
-
-    def _get_subtask_proc_idx(self, subtask_idx: int, proc_idx: int = None) -> int:
-        return proc_idx if proc_idx is not None else self.subtasks[subtask_idx]
-
-    def _multiply_by_substract(self, subtask_idx: int, value: int) -> int:
-        subtask = self.subtasks[subtask_idx]
-        return round(value * subtask.ratio)
 
 @dataclass
 class Proc():
@@ -234,6 +219,15 @@ def get_cost():
                     result += chann.cost * tasks_per_proc[proc_idx]
     return result
 
+########################################
+
+def get_subtask_cost(subtask: Subtask) -> int:
+    base_cost = tasks[subtask.main_task_idx].costs[substask.proc_idx]
+    return round(base_cost * subtask.ratio)
+
+def get_subtask_time(subtask: Subtask) -> int:
+    base_time = tasks[subtask.main_task_idx].times[subtask.proc_idx]
+    return round(base_time * subtask.ratio)
 
 ########################################
 # Calculate time
@@ -274,7 +268,7 @@ def get_time():
             u_start_time = result
             for sub in task.unpredicted_subtasks:
                 u_start_time = max(u_start_time, proc_free_time[sub.proc_idx])
-                u_finish_time = u_start_time + task.get_subtask_time(sub.idx)
+                u_finish_time = u_start_time + get_subtask_time(sub)
                 proc_free_time[sub.proc_idx] = u_finish_time
                 u_start_time = u_finish_time
             finish_times[task.idx] = u_finish_time
@@ -285,13 +279,13 @@ create_subtasks()
 tasks[6].unpredicted_subtasks = [
     Subtask(0, 3, 0, 0.04),#10
     Subtask(1, 2, 1, 0.5),#180
-    Subtask(3, 5, 1, 0.2)#11
+    Subtask(2, 5, 1, 0.2)#11
 ]
 
 tasks[7].unpredicted_subtasks = [
-    Subtask(4, 4, 0, 0.5),#75
-    Subtask(5, 3, 1, 0.5),#110
-    Subtask(6, 1, 2, 0.5)#12
+    Subtask(0, 4, 0, 0.5),#75
+    Subtask(1, 3, 1, 0.5),#110
+    Subtask(2, 1, 2, 0.5)#12
 ]
 
 print(f'Time: {get_time()}')
