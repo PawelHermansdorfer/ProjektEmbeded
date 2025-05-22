@@ -274,7 +274,7 @@ def get_time():
             u_start_time = result
             for sub in task.unpredicted_subtasks:
                 u_start_time = max(u_start_time, proc_free_time[sub.proc_idx])
-                u_finish_time = u_start_time + sub.time
+                u_finish_time = u_start_time + task.get_subtask_time(sub.idx)
                 proc_free_time[sub.proc_idx] = u_finish_time
                 u_start_time = u_finish_time
             finish_times[task.idx] = u_finish_time
