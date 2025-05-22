@@ -180,7 +180,6 @@ tasks[7].unpredicted_subtasks = [
 ########################################
 
 def choose_subtasks(tasks):
-
     subtasks_available=[]
     
     for i in tasks:
@@ -201,6 +200,7 @@ def choose_subtasks(tasks):
             tasks[i].unexpected_subtasks=unexpected_solution #unpredicted
             for a,b in deleted:
                 subtasks_available[a].append(b)
+
 # Calculate cost
 def get_cost():
     result = 0
