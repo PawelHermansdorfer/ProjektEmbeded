@@ -179,10 +179,14 @@ def create_subtasks():
     for task in tasks:
         if task.is_unpredicted or task.subtasks: # nieprzewidzane albo już ma podzadania
             continue
-        num_subtasks = random.randint(2,5)
+        num_subtasks = random.randint(MIN_SUBTASK,MAX_SUBTASK)
         random_values = [random.random() for _ in range(num_subtasks)] # losuje proporcje
         total = sum(random_values)
         ratios = [v / total for v in random_values] # normalizuje - suma bedzie rowna 1
+        if sum(ratios) != 1: #TODO: test
+            print("ERROR - create_subtasks() - powinno byc 1")
+            print(sum(ratios))
+
 
         for i, ratio in enumerate(ratios):
             task.subtasks.append(Subtask(
@@ -194,7 +198,7 @@ def create_subtasks():
 
 ########################################
 
-def choose_subtasks(tasks):
+def choose_subtasks():
     subtasks_available=[]
     
     for i in tasks:
@@ -204,17 +208,18 @@ def choose_subtasks(tasks):
         if tasks[i].is_unpredicted:
             unexpected_solution=[]
             deleted=[]
-            #wiecej niz jedno rozw?
+            #TODO: #wiecej niz jedno rozw?
             for j in range(3):
-                task_id=random.randint(0, len(subtasks_available))
-                subtask_id=random.randint(0, len(subtasks_available[task_id]))
-                unexpected_solution.append(subtasks_available[task_id][subtask_id])
+                task_id=random.randint(0, len(subtasks_available)-1)
+                subtask_id=random.randint(0, len(subtasks_available[task_id])-1)
+                choose_sub = subtasks_available[task_id][subtask_id]
+                unexpected_solution.append(choose_sub)
+                deleted.append(choose_sub)
                 del subtasks_available[task_id][subtask_id]
-                deleted.append([task_id,subtask_id])
 
             tasks[i].unexpected_subtasks=unexpected_solution #unpredicted
-            for a,b in deleted:
-                subtasks_available[a].append(b)
+            for sub in deleted:
+                subtasks_available[sub.main_task_idx].append(sub)
 
 # Calculate cost
 def get_cost():
