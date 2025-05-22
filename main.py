@@ -4,9 +4,9 @@ from typing import List
 from dataclasses import dataclass, field
 
 import random
+random.seed()
 
 from pprint import pprint # pip install pprint
-
 
 ########################################
 # CONSTANTS
@@ -193,6 +193,29 @@ def create_subtasks():
             ))
 
 ########################################
+
+def choose_subtasks(tasks):
+    subtasks_available=[]
+    
+    for i in tasks:
+        subtasks_available.append(i.subtasks)
+
+    for i in range(len(tasks)):
+        if tasks[i].is_unpredicted:
+            unexpected_solution=[]
+            deleted=[]
+            #wiecej niz jedno rozw?
+            for j in range(3):
+                task_id=random.randint(0, len(subtasks_available))
+                subtask_id=random.randint(0, len(subtasks_available[task_id]))
+                unexpected_solution.append(subtasks_available[task_id][subtask_id])
+                del subtasks_available[task_id][subtask_id]
+                deleted.append([task_id,subtask_id])
+
+            tasks[i].unexpected_subtasks=unexpected_solution #unpredicted
+            for a,b in deleted:
+                subtasks_available[a].append(b)
+
 # Calculate cost
 def get_cost():
     result = 0
