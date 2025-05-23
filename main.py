@@ -58,7 +58,7 @@ class Chann():
     allows_procs: List[bool] = field(default_factory=list) # Bool for each processor
 
 ########################################
-GRAPH_FILE = './test.txt'
+GRAPH_FILE = './data/test.txt'
 
 task_count = 0
 tasks = []
@@ -166,7 +166,7 @@ while line:
 
 ########################################
 # Read architecture
-file = open('./architektura.txt')
+file = open('./data/architektura.txt')
 for line in file:
     parts = line.strip().split()
     task_idx = int(parts[0])
