@@ -165,13 +165,26 @@ while line:
     line = file.readline().strip().replace('\t', ' ')
 
 ########################################
+# Read architecture
+file = open('./architektura.txt')
+for line in file:
+    parts = line.strip().split()
+    task_idx = int(parts[0])
+    proc_idx = int(parts[1])
+    chan_idx = int(parts[2])
+
+    tasks[task_idx].proc_idx = proc_idx
+    procs[proc_idx].chann_connected[chan_idx] = True
+file.close()
+
+########################################
 ########## TEMP ########
 # These fields need to be non None to calculate cost and time
-for task in tasks:
-    task.proc_idx = 0
-
-for proc in procs:
-    proc.chann_connected[0] = True
+#for task in tasks:
+#    task.proc_idx = 0
+#
+#for proc in procs:
+#    proc.chann_connected[0] = True
 
 ########################################
 # Create subtasks
