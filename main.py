@@ -210,7 +210,6 @@ def create_subtasks():
             ))
 
 ########################################
-
 def choose_subtasks():
     subtasks_available=[]
     
