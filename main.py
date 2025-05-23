@@ -215,12 +215,12 @@ def choose_subtasks():
                 subtask_id=random.randint(0, len(subtasks_available[task_id])-1)
                 choose_sub = subtasks_available[task_id][subtask_id]
                 unexpected_solution.append(choose_sub)
-                deleted.append(choose_sub)
-                del subtasks_available[task_id][subtask_id]
+                deleted.append(subtasks_available[task_id])
+                del subtasks_available[task_id]
 
             tasks[i].unpredicted_subtasks=unexpected_solution #unpredicted
-            for sub in deleted:
-                subtasks_available[sub.main_task_idx].append(sub)
+            for list in deleted:
+                subtasks_available.append(list)
 
 # Calculate cost
 def get_cost():
