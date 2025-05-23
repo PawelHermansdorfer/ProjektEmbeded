@@ -27,7 +27,6 @@ class Task():
     idx:      int = None # Index of task
     proc_idx: int = None # Index of processor assinged to this task
 
-    # TODO(Pawel Hermansdorfer): Read from file
     is_unpredicted: bool = None
 
     children_count: int       = None
@@ -178,15 +177,6 @@ for line in file:
 file.close()
 
 ########################################
-########## TEMP ########
-# These fields need to be non None to calculate cost and time
-#for task in tasks:
-#    task.proc_idx = 0
-#
-#for proc in procs:
-#    proc.chann_connected[0] = True
-
-########################################
 # Create subtasks
 def create_subtasks():
     for task in tasks:
@@ -196,9 +186,6 @@ def create_subtasks():
         random_values = [random.random() for _ in range(num_subtasks)] # losuje proporcje
         total = sum(random_values)
         ratios = [v / total for v in random_values] # normalizuje - suma bedzie rowna 1
-        if sum(ratios) != 1: #TODO: test
-            print("ERROR - create_subtasks() - powinno byc 1")
-            print(sum(ratios))
 
 
         for i, ratio in enumerate(ratios):
@@ -318,18 +305,6 @@ def get_time():
 
 create_subtasks()
 choose_subtasks()
-
-# tasks[6].unpredicted_subtasks = [
-#     Subtask(0, 3, 0, 0.04),#10
-#     Subtask(1, 2, 1, 0.5),#180
-#     Subtask(2, 5, 1, 0.2)#11
-# ]
-#
-# tasks[7].unpredicted_subtasks = [
-#     Subtask(0, 4, 0, 0.5),#75
-#     Subtask(1, 3, 1, 0.5),#110
-#     Subtask(2, 1, 2, 0.5)#12
-# ]
 
 print(f'Time: {get_time()}')
 print(f'Cost: {get_cost()}')
