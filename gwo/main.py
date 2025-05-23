@@ -1,18 +1,19 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-def calculate_fitness(x):
-    result = np.sum(x ** 2)
-    return result
-
-
-def init_population(dim, population_size):
-    positions = np.random.rand(population_size,dim)*(100-(-100))-100
-    return positions
-
-
-def gwo(max_iterations, population_size, tasks, procs, channs):
-
-    dim = len(tasks)
+def gwo(max_iterations, population_size,
+        init_pupulation, calculate_fitness, # functions
+        dim):
+    plot_data = {}
+    plot_data['mean_fitness'] = []
+    plot_data['max_fitness'] = []
+    plot_data['min_fitness'] = []
+    plot_data['alpha_fitness'] = []
+    plot_data['alpha_pos'] = []
+    plot_data['beta_fitness'] = []
+    plot_data['beta_pos'] = []
+    plot_data['delta_fitness'] = []
+    plot_data['delta_pos'] = []
 
     alpha_pos = np.zeros(dim)
     alpha_fitness = np.inf
@@ -23,22 +24,32 @@ def gwo(max_iterations, population_size, tasks, procs, channs):
 
     positions = init_population(dim, population_size)
 
-    l = 0
     for _ in range(max_iterations):
-        for i in range (positions.shape[0]):
-            Fitness = calculate_fitness(positions[i,:])
+        fitnesses = [calculate_fitness(positions[i,:]) for i in range(positions.shape[0])]
 
-            if Fitness<alpha_fitness:
-                alpha_fitness=Fitness
+        for i in range(positions.shape[0]):
+            fitness = fitnesses[i]
+            if fitness<alpha_fitness:
+                alpha_fitness=fitness
                 alpha_pos=positions[i,:]
 
-            if Fitness>alpha_fitness and Fitness<beta_fitness:
-                beta_fitness=Fitness
+            if fitness>alpha_fitness and fitness<beta_fitness:
+                beta_fitness=fitness
                 beta_pos=positions[i,:]
             
-            if Fitness>alpha_fitness and Fitness>beta_fitness and Fitness<delta_fitness:
-                delta_fitness=Fitness
+            if fitness>alpha_fitness and fitness>beta_fitness and fitness<delta_fitness:
+                delta_fitness=fitness
                 delta_pos=positions[i,:]
+
+        plot_data['mean_fitness'].append(np.mean(fitnesses))
+        plot_data['max_fitness'].append(np.max(fitnesses))
+        plot_data['min_fitness'].append(np.min(fitnesses))
+        plot_data['alpha_fitness'].append(alpha_fitness)
+        plot_data['alpha_pos'].append(alpha_pos)
+        plot_data['beta_fitness'].append(beta_fitness)
+        plot_data['beta_pos'].append(beta_pos)
+        plot_data['delta_fitness'].append(delta_fitness)
+        plot_data['delta_pos'].append(delta_pos)
         
         a = 2-1*(2/max_iterations)
         for i in range (positions.shape[0]):
@@ -71,15 +82,35 @@ def gwo(max_iterations, population_size, tasks, procs, channs):
                 X3 = delta_pos[j] - A3 * d_delta
 
                 positions[i,j] = (X1 + X2 + X3) / 3
-    return alpha_fitness, alpha_pos
+    return alpha_fitness, alpha_pos, plot_data
 
 
 # Algorithm params
-max_iterations = 100
+max_iterations = 20
 population_size = 100
 
-best_fitness, best_solution = gwo(max_iterations,
-                                  population_size,
-                                  tasks,
-                                  procs,
-                                  channs)
+def calculate_fitness(x):
+    result = np.sum(x ** 2)
+    return result
+
+def init_population(dim, population_size):
+    positions = np.random.rand(population_size,dim)*(100-(-100))-100
+    return positions
+
+best_fitness, best_solution, plot_data = gwo(max_iterations,
+                                             population_size,
+                                             init_population,
+                                             calculate_fitness,
+                                             2)
+print(best_fitness, best_solution)
+
+x = [i for i in range(max_iterations)]
+plt.plot(x, plot_data['alpha_fitness'], label='Alpha Fitness', linewidth=1)
+plt.plot(x, plot_data['beta_fitness'], label='Beta Fitness', linewidth=1)
+plt.plot(x, plot_data['delta_fitness'], label='Delta Fitness', linewidth=1)
+plt.plot(x, plot_data['mean_fitness'], label='Mean Fitness', linewidth=1)
+plt.xticks(x)
+plt.ylabel('Fitness')
+plt.xlabel('Iteration')
+plt.legend()
+plt.show()
