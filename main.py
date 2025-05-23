@@ -24,7 +24,7 @@ class Subtask():
 
 @dataclass
 class Task():
-    idx:      int = None# Index of task
+    idx:      int = None # Index of task
     proc_idx: int = None # Index of processor assinged to this task
 
     # TODO(Pawel Hermansdorfer): Read from file

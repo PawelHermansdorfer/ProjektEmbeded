@@ -1,48 +1,32 @@
-from pprint import pprint
-import copy
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
-
-POPULATION_SIZE = 100
-
-animation_frames = []
-
-def CalculateFitness(x):
+def calculate_fitness(x):
     result = np.sum(x ** 2)
     return result
 
 
-def initialization (Dim,LB,UB):
-    SS_Boundary = len(LB) if isinstance(UB,(list,np.ndarray)) else 1
-    if SS_Boundary ==1:
-        positions = np.random.rand(POPULATION_SIZE,Dim)*(UB-LB)+LB
-    else:
-        positions = np.zeros((POPULATION_SIZE,Dim))
-        for i in range(Dim):
-            positions[:,i]=np.random.rand(POPULATION_SIZE)*(UB[i]-LB[i])+LB[i]
+def init_population(dim, population_size):
+    positions = np.random.rand(population_size,dim)*(100-(-100))-100
     return positions
 
-def GWO(max_iterations,LB,UB,Dim):
-    alpha_pos = np.zeros(Dim)
+
+def gwo(max_iterations, population_size, tasks, procs, channs):
+
+    dim = len(tasks)
+
+    alpha_pos = np.zeros(dim)
     alpha_fitness = np.inf
-    beta_pos = np.zeros(Dim)
+    beta_pos = np.zeros(dim)
     beta_fitness = np.inf
-    delta_pos = np.zeros(Dim)
+    delta_pos = np.zeros(dim)
     delta_fitness = np.inf
 
-    positions = initialization(Dim,UB,LB)
+    positions = init_population(dim, population_size)
 
     l = 0
-    while l<max_iterations:
-        positions_copy = copy.deepcopy(positions)
-        animation_frames.append({'x': positions_copy[:,0], 'y': positions_copy[:,1]})
+    for _ in range(max_iterations):
         for i in range (positions.shape[0]):
-            BB_UB = positions[i,:]>UB 
-            BB_LB = positions[i,:]<LB
-            positions[i,:] = (positions[i,:]*(~(BB_UB+BB_LB)))+UB*BB_UB+LB*BB_LB
-            Fitness = CalculateFitness(positions[i,:])
+            Fitness = calculate_fitness(positions[i,:])
 
             if Fitness<alpha_fitness:
                 alpha_fitness=Fitness
@@ -59,23 +43,23 @@ def GWO(max_iterations,LB,UB,Dim):
         a = 2-1*(2/max_iterations)
         for i in range (positions.shape[0]):
             for j in range (positions.shape[1]):
-                r1=np.random.random()
-                r2=np.random.random()
+                r1=np.random.random() # [0,1]
+                r2=np.random.random() # [0,1]
 
                 A1 = 2*a*r1-a
                 C1 = 2 * r2
 
-                D_Alpha = abs(C1*alpha_pos[j]-positions[i,j])
-                X1 = alpha_pos[j]-A1*D_Alpha
+                d_alpha = abs(C1*alpha_pos[j] - positions[i,j])
+                X1 = alpha_pos[j]-A1*d_alpha
                 
                 r1=np.random.random()
                 r2=np.random.random()
 
                 A2 = 2*a*r1-a
-                C2=2*r2
+                C2 = 2*r2
 
-                D_Beta = abs(C2*beta_pos[j]-positions[i,j])
-                X2 = beta_pos[j]-A2*D_Beta
+                d_beta = abs(C2*beta_pos[j]-positions[i,j])
+                X2 = beta_pos[j]-A2*d_beta
 
                 r1 = np.random.random()
                 r2 = np.random.random()
@@ -83,44 +67,19 @@ def GWO(max_iterations,LB,UB,Dim):
                 A3 = 2*a*r1-a
                 C3 = 2*r2
 
-                D_Delta = abs(C3 * delta_pos[j] - positions[i,j])
-                X3 = delta_pos[j] - A3 * D_Delta
+                d_delta = abs(C3 * delta_pos[j] - positions[i,j])
+                X3 = delta_pos[j] - A3 * d_delta
 
                 positions[i,j] = (X1 + X2 + X3) / 3
-        l += 1
     return alpha_fitness, alpha_pos
 
 
-LB = -100
-UB = 100
-Dim = 2
+# Algorithm params
 max_iterations = 100
+population_size = 100
 
-bestfit, bestsol = GWO(max_iterations,LB,UB,Dim)
-print("Best Fitness =", bestfit)
-print("Best Solution = ",bestsol)
-
-
-
-
-frame_idx = 0
-x = animation_frames[frame_idx]['x']
-y = animation_frames[frame_idx]['y']
-
-fig, ax = plt.subplots()
-scat = ax.scatter(x, y, s=2)
-ax.set_xlim(LB, UB)
-ax.set_ylim(LB, UB)
-
-def update(frame):
-    global x, y, frame_idx
-    x = animation_frames[frame_idx]['x']
-    y = animation_frames[frame_idx]['y']
-    frame_idx = (frame_idx+1) % len(animation_frames)
-    scat.set_offsets(np.c_[x, y])
-    return scat,
-
-ani = FuncAnimation(fig, update, interval=500, blit=False)
-plt.show()
-
-
+best_fitness, best_solution = gwo(max_iterations,
+                                  population_size,
+                                  tasks,
+                                  procs,
+                                  channs)
