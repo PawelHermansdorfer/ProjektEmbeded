@@ -215,6 +215,8 @@ def choose_subtasks():
     subtasks_available=[]
     
     for i in tasks:
+        if i.is_unpredicted:
+            continue
         subtasks_available.append(i.subtasks)
 
     for i in range(len(tasks)):
@@ -230,7 +232,7 @@ def choose_subtasks():
                 deleted.append(choose_sub)
                 del subtasks_available[task_id][subtask_id]
 
-            tasks[i].unexpected_subtasks=unexpected_solution #unpredicted
+            tasks[i].unpredicted_subtasks=unexpected_solution #unpredicted
             for sub in deleted:
                 subtasks_available[sub.main_task_idx].append(sub)
 
