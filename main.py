@@ -1,3 +1,5 @@
+# Time: 2216
+# Cost: 355
 
 from dataclasses import dataclass
 from typing import List
@@ -12,7 +14,6 @@ from pprint import pprint # pip install pprint
 # CONSTANTS
 MIN_SUBTASK = 3
 MAX_SUBTASK = 6
-
 
 ########################################
 @dataclass
@@ -178,7 +179,9 @@ file.close()
 
 ########################################
 # Create subtasks
+subtask_count_total = 0
 def create_subtasks():
+    global subtask_count_total
     for task in tasks:
         if task.is_unpredicted or task.subtasks: # nieprzewidzane albo już ma podzadania
             continue
@@ -190,11 +193,12 @@ def create_subtasks():
 
         for i, ratio in enumerate(ratios):
             task.subtasks.append(Subtask(
-                idx=i,
+                idx=subtask_count_total,
                 main_task_idx=task.idx,
                 proc_idx=task.proc_idx,
                 ratio=ratio
             ))
+            subtask_count_total += 1
 
 ########################################
 def choose_subtasks():
@@ -316,7 +320,6 @@ print(f'Cost: {get_cost()}')
 pprint(procs)
 pprint(channs)
 pprint(tasks)
-
 
 ########################################
 # Draw graph
