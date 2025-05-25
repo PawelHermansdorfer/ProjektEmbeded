@@ -285,8 +285,12 @@ def get_time():
         finish_times[task.idx] = max(proc_free_time[task.proc_idx], latest_parent_finish_time)
         finish_times[task.idx] += task.times[task.proc_idx]
         if task.proc_idx != tasks[latest_parent_finish_idx].proc_idx:
-            # TODO(Pawel Hermansdorfer): Replace chann0 with correct one. What if they are connected by two channels????
-            B = tasks[latest_parent_finish_idx].children_costs[task_idx] / channs[0].throughput
+            proc_a = task.proc_idx
+            proc_b = tasks[latest_parent_finish_idx].proc_idx
+            shared_channs = [i for i in range(len(channs)) if proc_a.chann_connected[i] and proc_b.chann_connected[i]]
+            best_chann_idx = min(shared_channs, key=lambda idx: channs[idx].throughput)
+            best_chann = channs[best_chann_idx]
+            B = tasks[latest_parent_finish_idx].children_costs[task_idx] / best_chann.throughput
             finish_time[task.idx] += B
 
         proc_free_time[task.proc_idx] = finish_times[task.idx]
