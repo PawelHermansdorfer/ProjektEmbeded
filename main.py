@@ -16,6 +16,7 @@ SUBTASK_CONFIGURATION_SIZE = 3
 CONFIGURATIONS_PER_UT = 4
 
 np.random.seed(0)
+# np.random.seed()
 
 
 (task_count, tasks), (proc_count, procs), (chann_count, channs) = read_graph_file('./data/test.txt')
@@ -26,8 +27,8 @@ pp_proc_count = len(pp_procs)
 
 subtask_count, subtasks = create_subtasks(tasks,
                                           TASKS_TO_SPLIT_COUNT, MIN_SUBTASK_TO_MAIN_TASK_RATIO,
-                                          MIN_SUBTASK_COUNT, MAX_SUBTASK_COUNT) # list with references to all subtasks
-ut_task_count, ut_tasks = select_configurations_for_unpredicted_tasks(tasks, subtasks, CONFIGURATIONS_PER_UT, SUBTASK_CONFIGURATION_SIZE) # list with references to all UT tasks
+                                          MIN_SUBTASK_COUNT, MAX_SUBTASK_COUNT)
+ut_task_count, ut_tasks = select_configurations_for_unpredicted_tasks(tasks, subtasks, CONFIGURATIONS_PER_UT, SUBTASK_CONFIGURATION_SIZE)
 
 
 # solution = [

@@ -3,7 +3,7 @@ from typing import List
 from dataclasses import dataclass, field
 
 import numpy as np
-np.random.seed(0)
+
 
 @dataclass
 class Subtask():

@@ -3,7 +3,6 @@ import copy
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-np.random.seed(0)
 
 def gwo(max_iterations, population_size,
         init_population_func, fitness_func, # functions
@@ -109,13 +108,14 @@ def gwo_plot_result(plot_data):
     fig = plt.figure(figsize=(14, 6))
     gs = GridSpec(2, 2, width_ratios=[1, 1])
 
-
     ax1 = fig.add_subplot(gs[:, 0])
     ax1.plot(plot_data['alpha_fitness'], label='Alpha Fitness', linewidth=1)
     ax1.plot(plot_data['beta_fitness'], label='Beta Fitness', linewidth=1)
     ax1.plot(plot_data['delta_fitness'], label='Delta Fitness', linewidth=1)
     ax1.plot(plot_data['mean_fitness'], label='Mean Fitness', linewidth=1)
     ax1.set_title('Fitness')
+    ax1.ticklabel_format(style='plain', axis='y')
+    ax1.legend()
 
     ax2 = fig.add_subplot(gs[0, 1])
     ax2.plot(plot_data['alpha_time'])
@@ -127,12 +127,3 @@ def gwo_plot_result(plot_data):
 
     plt.tight_layout()
     plt.show()
-
-    # plt.plot(plot_data['alpha_fitness'], label='Alpha Fitness', linewidth=1)
-    # plt.plot(plot_data['beta_fitness'], label='Beta Fitness', linewidth=1)
-    # plt.plot(plot_data['delta_fitness'], label='Delta Fitness', linewidth=1)
-    # plt.plot(plot_data['mean_fitness'], label='Mean Fitness', linewidth=1)
-    # plt.ylabel('Fitness')
-    # plt.xlabel('Iteration')
-    # plt.legend()
-    # plt.show()
