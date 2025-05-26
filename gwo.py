@@ -11,12 +11,16 @@ def gwo(max_iterations, population_size,
     plot_data['mean_fitness']  = []
     plot_data['max_fitness']   = []
     plot_data['min_fitness']   = []
+
     plot_data['alpha_fitness'] = []
     plot_data['alpha_pos']     = []
     plot_data['beta_fitness']  = []
     plot_data['beta_pos']      = []
     plot_data['delta_fitness'] = []
     plot_data['delta_pos']     = []
+
+    plot_data['alpha_time']    = []
+    plot_data['alpha_cost']    = []
 
     positions = np.array(init_population_func(population_size))
     fitnesses = []
@@ -56,6 +60,9 @@ def gwo(max_iterations, population_size,
         plot_data['beta_pos'].append(beta_pos)
         plot_data['delta_fitness'].append(delta_fitness)
         plot_data['delta_pos'].append(delta_pos)
+
+        plot_data['alpha_time']    = []
+        plot_data['alpha_cost']    = []
         
         a = 2-1*(2/max_iterations)
         for i in range (positions.shape[0]):

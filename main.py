@@ -1,5 +1,3 @@
-# TODO(Pawel Hermansdorfer): Update cost function. Update the cost function. After assigning subtasks to new processors, their cost may change, and thus the cost of the main task may change.
-
 import numpy as np
 
 from pprint import pprint
@@ -73,8 +71,7 @@ def init_population(population_size):
 
 def fitness(solution):
     apply_solution(solution)
-    # TODO(Pawel Hermansdorfer): Uncomment it after fixing cost function
-    result = get_time(tasks, procs, channs) # * get_cost(tasks, procs, channs) 
+    result = get_time(tasks, procs, channs) * get_cost(tasks, procs, channs) 
     return result
 
 def limit_pos(x, idx):

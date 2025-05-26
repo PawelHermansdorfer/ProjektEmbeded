@@ -60,6 +60,8 @@ def create_subtasks(tasks, tasks_to_split_count, min_ratio, min_subtask_count, m
 
     while tasks_to_split_count > 0:
         task = np.random.choice(options)
+        # TODO(Pawel Hermansdorfer): Crashes in get_time() but it shouldn't
+        # task.proc_idx = None
         options.remove(task)
 
         num_subtasks = np.random.randint(min_subtask_count, max_subtask_count)
@@ -76,7 +78,7 @@ def create_subtasks(tasks, tasks_to_split_count, min_ratio, min_subtask_count, m
             subtask = Subtask(
                         idx=subtask_count,
                         main_task_idx=task.idx,
-                        proc_idx=task.proc_idx,
+                        proc_idx=None,
                         ratio=ratio
                     )
             task.subtasks.append(subtask)
@@ -112,8 +114,13 @@ def get_cost(tasks, procs, channs):
     # Cost of tasks
     for task in tasks:
         if not task.is_unpredicted:
-            tasks_per_proc[task.proc_idx] += 1
-            result += task.costs[task.proc_idx]
+            if task.subtasks:
+                for sub in task.subtasks:
+                    tasks_per_proc[sub.proc_idx] += 1
+                    result += task.costs[sub.proc_idx] * sub.ratio
+            else:
+                tasks_per_proc[task.proc_idx] += 1
+                result += task.costs[task.proc_idx]
 
     # Cost of procs
     for proc in procs:
