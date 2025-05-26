@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 np.random.seed(0)
 
@@ -19,8 +20,8 @@ def gwo(max_iterations, population_size,
     plot_data['delta_fitness'] = []
     plot_data['delta_pos']     = []
 
-    plot_data['alpha_time']    = []
-    plot_data['alpha_cost']    = []
+    plot_data['alpha_time'] = []
+    plot_data['alpha_cost'] = []
 
     positions = np.array(init_population_func(population_size))
     fitnesses = []
@@ -31,7 +32,6 @@ def gwo(max_iterations, population_size,
     beta_fitness  = np.inf
     delta_pos     = positions[0]
     delta_fitness = np.inf
-
 
     for _ in range(max_iterations):
         fitnesses = [fitness_func(positions[i,:]) for i in range(positions.shape[0])]
@@ -60,9 +60,6 @@ def gwo(max_iterations, population_size,
         plot_data['beta_pos'].append(beta_pos)
         plot_data['delta_fitness'].append(delta_fitness)
         plot_data['delta_pos'].append(delta_pos)
-
-        plot_data['alpha_time']    = []
-        plot_data['alpha_cost']    = []
         
         a = 2-1*(2/max_iterations)
         for i in range (positions.shape[0]):
@@ -109,11 +106,33 @@ def gwo(max_iterations, population_size,
 
 
 def gwo_plot_result(plot_data):
-    plt.plot(plot_data['alpha_fitness'], label='Alpha Fitness', linewidth=1)
-    plt.plot(plot_data['beta_fitness'], label='Beta Fitness', linewidth=1)
-    plt.plot(plot_data['delta_fitness'], label='Delta Fitness', linewidth=1)
-    plt.plot(plot_data['mean_fitness'], label='Mean Fitness', linewidth=1)
-    plt.ylabel('Fitness')
-    plt.xlabel('Iteration')
-    plt.legend()
+    fig = plt.figure(figsize=(14, 6))
+    gs = GridSpec(2, 2, width_ratios=[1, 1])
+
+
+    ax1 = fig.add_subplot(gs[:, 0])
+    ax1.plot(plot_data['alpha_fitness'], label='Alpha Fitness', linewidth=1)
+    ax1.plot(plot_data['beta_fitness'], label='Beta Fitness', linewidth=1)
+    ax1.plot(plot_data['delta_fitness'], label='Delta Fitness', linewidth=1)
+    ax1.plot(plot_data['mean_fitness'], label='Mean Fitness', linewidth=1)
+    ax1.set_title('Fitness')
+
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.plot(plot_data['alpha_time'])
+    ax2.set_title('Alpha time')
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.plot(plot_data['alpha_cost'])
+    ax3.set_title('Alpha cost')
+
+    plt.tight_layout()
     plt.show()
+
+    # plt.plot(plot_data['alpha_fitness'], label='Alpha Fitness', linewidth=1)
+    # plt.plot(plot_data['beta_fitness'], label='Beta Fitness', linewidth=1)
+    # plt.plot(plot_data['delta_fitness'], label='Delta Fitness', linewidth=1)
+    # plt.plot(plot_data['mean_fitness'], label='Mean Fitness', linewidth=1)
+    # plt.ylabel('Fitness')
+    # plt.xlabel('Iteration')
+    # plt.legend()
+    # plt.show()

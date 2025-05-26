@@ -86,6 +86,11 @@ max_iterations = 100
 population_size = 10
 best_fitness, best_solution, plot_data = gwo(max_iterations, population_size, init_population, fitness, limit_pos)
 
+for alpha_pos in plot_data['alpha_pos']:
+    apply_solution(alpha_pos)
+    plot_data['alpha_time'].append(get_time(tasks, procs, channs))
+    plot_data['alpha_cost'].append(get_cost(tasks, procs, channs))
+
 apply_solution(best_solution)
 print(f'Best solution: {best_solution} Best fitness: {best_fitness}')
 print(f'Time:  {get_time(tasks, procs, channs)}')
