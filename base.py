@@ -99,7 +99,7 @@ def select_configurations_for_unpredicted_tasks(tasks, subtasks, configuration_c
     return len(ut_tasks), ut_tasks
 
 def get_subtask_cost(tasks, subtask: Subtask) -> int:
-    base_cost = tasks[subtask.main_task_idx].costs[substask.proc_idx]
+    base_cost = tasks[subtask.main_task_idx].costs[subtask.proc_idx]
     return base_cost * subtask.ratio
 
 def get_subtask_time(tasks, subtask: Subtask) -> int:
@@ -160,16 +160,35 @@ def get_time(tasks, procs, channs):
                     latest_parent_finish_idx = parent_idx
                     latest_parent_finish_time = finish_times[parent_idx]
 
-        finish_times[task.idx] = max(proc_free_time[task.proc_idx], latest_parent_finish_time)
-        finish_times[task.idx] += task.times[task.proc_idx]
-        if task.proc_idx != tasks[latest_parent_finish_idx].proc_idx:
-            proc_a = task.proc_idx
-            proc_b = tasks[latest_parent_finish_idx].proc_idx
-            shared_channs = [i for i in range(len(channs)) if proc_a.chann_connected[i] and proc_b.chann_connected[i]]
-            best_chann_idx = min(shared_channs, key=lambda idx: channs[idx].throughput)
-            best_chann = channs[best_chann_idx]
-            B = tasks[latest_parent_finish_idx].children_costs[task_idx] / best_chann.throughput
-            finish_time[task.idx] += B
+        if task.subtasks:
+            current_time = latest_parent_finish_time
+            for sub in task.subtasks:
+                start_time = max(proc_free_time[sub.proc_idx], current_time)
+                finish_time = start_time + get_subtask_time(tasks, sub)
+                proc_free_time[sub.proc_idx] = finish_time
+                current_time = finish_time
+            finish_times[task.idx] = current_time
+        else:
+            finish_times[task.idx] = max(proc_free_time[task.proc_idx], latest_parent_finish_time)
+            finish_times[task.idx] += task.times[task.proc_idx]
+        if task.idx != latest_parent_finish_idx:
+            if task.subtasks:
+                proc_a = procs[task.subtasks[0].proc_idx]
+            else:
+                proc_a = procs[task.proc_idx]
+        
+            if tasks[latest_parent_finish_idx].subtasks:
+                proc_b = procs[tasks[latest_parent_finish_idx].subtasks[-1].proc_idx]
+            else:
+                proc_b = procs[tasks[latest_parent_finish_idx].proc_idx]
+       
+            if proc_a != proc_b:
+                shared_channs = [i for i in range(len(channs)) if proc_a.chann_connected[i] and proc_b.chann_connected[i]]
+                best_chann_idx = min(shared_channs, key=lambda idx: channs[idx].throughput)
+                best_chann = channs[best_chann_idx]
+                child_cost_idx = tasks[latest_parent_finish_idx].children_idxs.index(task.idx)
+                B = tasks[latest_parent_finish_idx].children_costs[child_cost_idx] / best_chann.throughput
+                finish_times[task.idx] += B
 
         proc_free_time[task.proc_idx] = finish_times[task.idx]
         result = max(result, finish_times[task.idx])
@@ -234,6 +253,8 @@ def read_graph_file(file_path):
                 channs = [Chann() for _ in range(chann_count)]
                 for proc in procs:
                     proc.chann_connected = [False for _ in range(chann_count)]
+                for proc in procs:
+                    proc.chann_connected[0] = True
 
         # TASKS
         elif parsing_chunk == CHUNK_TASKS:
