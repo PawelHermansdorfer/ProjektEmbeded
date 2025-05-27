@@ -97,3 +97,37 @@ print(f'Best solution: {best_solution} Best fitness: {best_fitness}')
 print(f'Time:  {get_time(tasks, procs, channs)}')
 print(f'Cost:  {get_cost(tasks, procs, channs)}')
 gwo_plot_result(plot_data)
+
+from collections import defaultdict
+print("\n=== ARCHITEKTURA KOŃCOWA ===")
+proc_to_tasks = defaultdict(list)
+for task in tasks:
+    if task.is_unpredicted:
+        continue
+
+    if task.subtasks:
+        for sub in task.subtasks:
+            label = f"T{task.idx}_{sub.idx}"
+            proc = procs[sub.proc_idx]
+            proc_label = f"PP{proc.idx}" if proc.is_multipurpose else f"HC{proc.idx}"
+            proc_to_tasks[proc_label].append(label)
+    else:
+        label = f"T{task.idx}"
+        proc = procs[task.proc_idx]
+        proc_label = f"PP{proc.idx}" if proc.is_multipurpose else f"HC{proc.idx}"
+        proc_to_tasks[proc_label].append(label)
+
+for proc_label, tasks_list in proc_to_tasks.items():
+    print(f"{proc_label}: {', '.join(tasks_list)}")
+
+used_proc_idxs = {int(label[2:]) for label in proc_to_tasks.keys()}
+for chann in channs:
+    connected_procs = []
+    for proc in procs:
+        if proc.idx in used_proc_idxs and proc.chann_connected[chann.idx]:
+            label = f"PP{proc.idx}" if proc.is_multipurpose else f"HC{proc.idx}"
+            connected_procs.append(label)
+    if connected_procs:
+        print(f"CHANN_{chann.idx}: {', '.join(connected_procs)}")
+
+#TODO iteracja ktora, czasy rozpoczesci kazdego zadania subzadania, jakie zad wykonuja zadanie nieprzewidziane
