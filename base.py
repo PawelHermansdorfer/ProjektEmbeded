@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import List
 from dataclasses import dataclass, field
 
+import networkx as nx
+import matplotlib.pyplot as plt
+
 import numpy as np
 import re
 
@@ -345,3 +348,33 @@ def read_architecture_file(tasks, procs, channs, file_path):
                 for proc_name in proc_names:
                     proc_idx = int(re.findall(r'\d+', proc_name)[0])
                     procs[proc_idx].chann_connected[chann_idx] = True
+
+
+
+def draw_graph(tasks):
+    def hierarchy_pos(G, root=None, width=1.0, vert_gap=0.2, vert_loc=0, xcenter=0.5, pos=None, parent=None):
+        if pos is None:
+            pos = {}
+        if root is None:
+            root = list(nx.topological_sort(G))[0]
+        children = list(G.successors(root))
+        if not isinstance(G, nx.DiGraph):
+            raise TypeError("Only works with DiGraph")
+        if parent:
+            children = [c for c in children if c != parent]
+        if len(children) != 0:
+            dx = width / len(children)
+            nextx = xcenter - width / 2 - dx / 2
+            for child in children:
+                nextx += dx
+                pos = hierarchy_pos(G, child, width=dx, vert_gap=vert_gap,
+                                    vert_loc=vert_loc - vert_gap, xcenter=nextx, pos=pos, parent=root)
+        pos[root] = (xcenter, vert_loc)
+        return pos
+
+    G = nx.DiGraph()
+    G.add_edges_from(edges)
+    pos = hierarchy_pos(G, root=0)
+    nx.draw(G, pos, with_labels=True, node_color='lightgreen', edge_color='gray',
+            node_size=2000, font_size=16, arrows=True, arrowsize=20)
+    plt.show()

@@ -20,6 +20,7 @@ np.random.seed(100) # 1 69
 
 
 (task_count, tasks), (proc_count, procs), (chann_count, channs) = read_graph_file('./data/test.txt')
+# draw_graph(tasks)
 read_architecture_file(tasks, procs, channs, './data/architektura.txt')
 
 pp_procs = [proc for proc in procs if proc.is_multipurpose]
