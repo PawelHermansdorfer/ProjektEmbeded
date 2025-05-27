@@ -4,13 +4,13 @@ Projekt polega na optymalizacji przydziału zadań nieprzewidzianych przy pomocy
 
 • wczytuje architekture systemu wbudowanego oraz graf zadań
 • tworzy populacje
-•• losowo wybiera zadania po podziału na losową liczbę podzadań (min.3)
+•• losowo wybiera zadania do podziału na losową liczbę podzadań (min.3)
 •• podzadań wybiera 3, które stanowią rozwiązanie zadania nieprzewidzianego
 • wykonuje kolejne kroki GWO do osiągnięcia maksymalnej liczby iteracji albo gdy wynik najlepszego osobnika się nie poprawia  
 • wypisuje na wyjście m.in informacje o końcowym przydziale zadań do procesorów, całkowity koszt i czas, czasy wykonywania poszczególnych zadań, jakie podzadania zostały wykorzystane do rozwiązania zadań nieprzewidzianych oraz podział zadań na podzadania.
 
 Uruchomienie:
-Projekt jest napisany w języku python 3.10, do uruchomienia potrzebny jest interpreter pythona oraz biblioteki NumPy oraz Matplotlib. Należy uruchomić plik main.py.
+Projekt jest napisany w języku python 3.10, do uruchomienia potrzebny jest interpreter pythona oraz biblioteki NumPy, networkx oraz Matplotlib. Należy uruchomić plik main.py.
 
 
 Przedstawienie pojedynczej instancji osobnika (wilka)

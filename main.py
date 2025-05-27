@@ -89,11 +89,11 @@ max_iterations = 100
 population_size = 10
 stop_after_stagnation = 15
 best_fitness, best_solution, plot_data, iterations = gwo(max_iterations, population_size, init_population, fitness, limit_pos, stop_after_stagnation)
-
 apply_solution(best_solution)
-print(f'Best solution: {best_solution} Best fitness: {best_fitness} Itrations: {iterations}')
-print(f'Time:  {get_time(tasks, procs, channs)}')
-print(f'Cost:  {get_cost(tasks, procs, channs)}')
+
+print(f'Best solution: {best_solution} Best fitness: {round(best_fitness, 1)} Itrations: {iterations}')
+print(f'Time:  {get_time(tasks, procs, channs): .1f}')
+print(f'Cost:  {get_cost(tasks, procs, channs): .1f}')
 
 print("\n=== ARCHITEKTURA KOŃCOWA ===")
 proc_to_tasks = defaultdict(list)
