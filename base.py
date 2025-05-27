@@ -33,6 +33,10 @@ class Task():
     subtask_configurations: List[List[Subtask]] = field(default_factory=list)
     subtask_configuration_count: int = None
 
+    time: float = None
+    begin_time: float = None 
+    finish_time: float = None
+
 
 @dataclass
 class Proc():
@@ -206,7 +210,10 @@ def get_time(tasks, procs, channs):
                 proc_free_time[sub.proc_idx] = u_finish_time
                 u_start_time = u_finish_time
             finish_times[task.idx] = u_finish_time
-    return max([t for t in finish_times if t is not None])
+
+    for task in tasks:
+        task.finish_time = finish_times[task.idx]
+    return max(finish_times)
 
 ########################################
 def read_graph_file(file_path):

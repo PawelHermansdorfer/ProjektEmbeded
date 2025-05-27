@@ -6,7 +6,7 @@ from matplotlib.gridspec import GridSpec
 
 def gwo(max_iterations, population_size,
         init_population_func, fitness_func, # functions
-        limit_pos_func):
+        limit_pos_func, stop_after_stagnation):
     plot_data = {}
     plot_data['mean_fitness']  = []
     plot_data['max_fitness']   = []
@@ -32,7 +32,8 @@ def gwo(max_iterations, population_size,
     delta_pos     = positions[0]
     delta_fitness = np.inf
 
-    for _ in range(max_iterations):
+    iterations = 0
+    for iterations in range(max_iterations):
         fitnesses = [fitness_func(positions[i,:]) for i in range(positions.shape[0])]
 
         # NOTE(Pawel Hermansdorfer): Withouth copy, operation on positions overwrites alpha, beta, delta wolfs and best solution may be lost
@@ -93,6 +94,15 @@ def gwo(max_iterations, population_size,
                 pos_real = (X1 + X2 + X3) / 3
                 positions[i,j] = limit_pos_func(pos_real, j)
 
+        should_stop = True
+        for fitness in plot_data['alpha_fitness'][-stop_after_stagnation:]:
+            if fitness != alpha_fitness:
+                should_stop = False
+                break
+
+        if should_stop and len(plot_data['alpha_fitness']) > stop_after_stagnation: break
+
+
     # NOTE(Pawel Hermansdorfer): Check for better solutions after last iteration
     fitnesses = np.array([fitness_func(positions[i,:]) for i in range(positions.shape[0])])
     for position, fitness in zip(positions, fitnesses):
@@ -101,7 +111,7 @@ def gwo(max_iterations, population_size,
             alpha_fitness = fitness
             alpha_pos = position
 
-    return alpha_fitness, alpha_pos, plot_data
+    return alpha_fitness, alpha_pos, plot_data, iterations
 
 
 def gwo_plot_result(plot_data):

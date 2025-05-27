@@ -15,13 +15,12 @@ MAX_SUBTASK_COUNT = 6
 SUBTASK_CONFIGURATION_SIZE = 3
 CONFIGURATIONS_PER_UT = 4
 
-# np.random.seed(0)
-np.random.seed()
+np.random.seed(100) # 1 69
+# np.random.seed()
 
 
 (task_count, tasks), (proc_count, procs), (chann_count, channs) = read_graph_file('./data/test.txt')
 read_architecture_file(tasks, procs, channs, './data/architektura.txt')
-pprint(tasks)
 
 pp_procs = [proc for proc in procs if proc.is_multipurpose]
 pp_proc_count = len(pp_procs)
@@ -84,20 +83,15 @@ def limit_pos(x, idx):
         result = max(min(round(x), pp_proc_count-1), 0)
     return result 
 
-max_iterations = 100
-population_size = 100
-best_fitness, best_solution, plot_data = gwo(max_iterations, population_size, init_population, fitness, limit_pos)
-
-for alpha_pos in plot_data['alpha_pos']:
-    apply_solution(alpha_pos)
-    plot_data['alpha_time'].append(get_time(tasks, procs, channs))
-    plot_data['alpha_cost'].append(get_cost(tasks, procs, channs))
+max_iterations = 50
+population_size = 10
+stop_after_stagnation = 5
+best_fitness, best_solution, plot_data, iterations = gwo(max_iterations, population_size, init_population, fitness, limit_pos, stop_after_stagnation)
 
 apply_solution(best_solution)
-print(f'Best solution: {best_solution} Best fitness: {best_fitness}')
+print(f'Best solution: {best_solution} Best fitness: {best_fitness} Itrations: {iterations}')
 print(f'Time:  {get_time(tasks, procs, channs)}')
 print(f'Cost:  {get_cost(tasks, procs, channs)}')
-gwo_plot_result(plot_data)
 
 from collections import defaultdict
 print("\n=== ARCHITEKTURA KOŃCOWA ===")
@@ -140,7 +134,7 @@ tast_to_substract = defaultdict(list)
 for task in tasks:
     label = f"T{task.idx}"
     for sub in task.subtasks:
-        tast_to_substract[label].append(f"T{sub.main_task_idx}_{sub.idx} ratio:{sub.ratio}")
+        tast_to_substract[label].append(f"T{sub.main_task_idx}_{sub.idx} ratio: {sub.ratio}")
     if not task.subtasks:
         tast_to_substract[label].append(label)
 
@@ -160,4 +154,32 @@ for chann in channs:
     if connected_procs:
         print(f"CHANN_{chann.idx}: {', '.join(connected_procs)}")
 
+
+# Calculate times
+get_time(tasks, procs, channs)
+for task in tasks:
+    if task.is_unpredicted:
+        task.time = 0
+        for subtask in task.unpredicted_subtasks:
+            task.time += tasks[subtask.main_task_idx].times[subtask.proc_idx] * subtask.ratio
+
+    elif task.subtasks:
+        task.time = 0
+        for subtask in task.subtasks:
+            task.time += task.times[subtask.proc_idx] * subtask.ratio
+
+    else:
+        task.time = task.times[task.proc_idx]
+
+    task.begin_time = task.finish_time - task.time
+
+for task in tasks:
+    print(f'Task{task.idx} begin time {task.begin_time} | time: {task.time} | finish time: {task.finish_time}')
+
+for alpha_pos in plot_data['alpha_pos']:
+    apply_solution(alpha_pos)
+    plot_data['alpha_time'].append(get_time(tasks, procs, channs))
+    plot_data['alpha_cost'].append(get_cost(tasks, procs, channs))
+apply_solution(best_solution)
+gwo_plot_result(plot_data)
 #TODO iteracja ktora, czasy rozpoczesci kazdego zadania subzadania
