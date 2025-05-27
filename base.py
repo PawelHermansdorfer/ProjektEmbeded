@@ -3,7 +3,7 @@ from typing import List
 from dataclasses import dataclass, field
 
 import numpy as np
-
+import re
 
 @dataclass
 class Subtask():
@@ -190,7 +190,11 @@ def get_time(tasks, procs, channs):
                 B = tasks[latest_parent_finish_idx].children_costs[child_cost_idx] / best_chann.throughput
                 finish_times[task.idx] += B
 
-        proc_free_time[task.proc_idx] = finish_times[task.idx]
+        if task.subtasks:
+            last_proc_idx = task.subtasks[-1].proc_idx
+            proc_free_time[last_proc_idx] = finish_times[task.idx]
+        else:
+            proc_free_time[task.proc_idx] = finish_times[task.idx]
         result = max(result, finish_times[task.idx])
 
     # + time of unpredicted tasks
@@ -316,13 +320,20 @@ def read_graph_file(file_path):
 
 
 def read_architecture_file(tasks, procs, channs, file_path):
-    file = open(file_path)
-    for line in file:
-        parts = line.strip().split()
-        task_idx = int(parts[0])
-        proc_idx = int(parts[1])
-        chan_idx = int(parts[2])
-
-        tasks[task_idx].proc_idx = proc_idx
-        procs[proc_idx].chann_connected[chan_idx] = True
-    file.close()
+    with open(file_path) as file:
+        for line in file:
+            line = line.strip()
+            if line.startswith("PP") or line.startswith("HC"):
+                proc_name, task_list_str = line.split(":")
+                proc_idx = int(re.findall(r'\d+', proc_name)[0])
+                task_names = [t.strip() for t in task_list_str.split(",") if t.strip()]
+                for task_name in task_names:
+                    task_idx = int(re.findall(r'\d+', task_name)[0])
+                    tasks[task_idx].proc_idx = proc_idx
+            elif line.startswith("CHANN_"):
+                chann_str, proc_names_str = line.split(":")
+                chann_idx = int(re.findall(r'\d+', chann_str)[0])
+                proc_names = [name.strip() for name in proc_names_str.split(",") if name.strip()]
+                for proc_name in proc_names:
+                    proc_idx = int(re.findall(r'\d+', proc_name)[0])
+                    procs[proc_idx].chann_connected[chann_idx] = True
