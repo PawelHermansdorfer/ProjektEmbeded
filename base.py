@@ -11,6 +11,7 @@ import re
 @dataclass
 class Subtask():
     idx:            int = None # Index of subtask
+    minor_idx:      int = None
     main_task_idx:  int = None # Index of main task
     proc_idx:       int = None # Index of processor
     ratio:          float = None # Percent (0.0;1.0)
@@ -80,9 +81,10 @@ def create_subtasks(tasks, tasks_to_split_count, min_ratio, min_subtask_count, m
         ratios = random_integers / 100
 
         task.subtasks = []
-        for ratio in ratios:
+        for idx, ratio in enumerate(ratios):
             subtask = Subtask(
                         idx=subtask_count,
+                        minor_idx=idx,
                         main_task_idx=task.idx,
                         proc_idx=None,
                         ratio=ratio

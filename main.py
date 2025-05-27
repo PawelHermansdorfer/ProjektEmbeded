@@ -1,5 +1,7 @@
+from collections import defaultdict
 import numpy as np
 
+# TODO(Pawel Hermansdorfer): remove pprint
 from pprint import pprint
 
 from base import *
@@ -93,7 +95,6 @@ print(f'Best solution: {best_solution} Best fitness: {best_fitness} Itrations: {
 print(f'Time:  {get_time(tasks, procs, channs)}')
 print(f'Cost:  {get_cost(tasks, procs, channs)}')
 
-from collections import defaultdict
 print("\n=== ARCHITEKTURA KOŃCOWA ===")
 proc_to_tasks = defaultdict(list)
 for task in tasks:
@@ -123,7 +124,7 @@ for task in tasks:
     if task.is_unpredicted:
         label = f"UT{task.idx}"
         for sub in task.unpredicted_subtasks:
-            unpredicted_to_subtask[label].append(f"T{sub.main_task_idx}_{sub.idx}")
+            unpredicted_to_subtask[label].append(f"T{sub.main_task_idx}_{sub.minor_idx}")
 
 print("\n== Rozwiązanie zadań nieprzewidzianych ==")
 for unpredicted_list, sub_list in unpredicted_to_subtask.items():
@@ -134,7 +135,7 @@ tast_to_substract = defaultdict(list)
 for task in tasks:
     label = f"T{task.idx}"
     for sub in task.subtasks:
-        tast_to_substract[label].append(f"T{sub.main_task_idx}_{sub.idx} ratio: {sub.ratio}")
+        tast_to_substract[label].append(f"T{sub.main_task_idx}_{sub.minor_idx} ratio: {sub.ratio}")
     if not task.subtasks:
         tast_to_substract[label].append(label)
 
@@ -176,10 +177,10 @@ for task in tasks:
 for task in tasks:
     print(f'Task{task.idx} begin time {task.begin_time} | time: {task.time} | finish time: {task.finish_time}')
 
+
 for alpha_pos in plot_data['alpha_pos']:
     apply_solution(alpha_pos)
     plot_data['alpha_time'].append(get_time(tasks, procs, channs))
     plot_data['alpha_cost'].append(get_cost(tasks, procs, channs))
 apply_solution(best_solution)
 gwo_plot_result(plot_data)
-#TODO iteracja ktora, czasy rozpoczesci kazdego zadania subzadania
