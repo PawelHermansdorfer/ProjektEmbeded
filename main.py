@@ -117,9 +117,38 @@ for task in tasks:
         proc_label = f"PP{proc.idx}" if proc.is_multipurpose else f"HC{proc.idx}"
         proc_to_tasks[proc_label].append(label)
 
+print("\n== Przypisanie zadań ==")
 for proc_label, tasks_list in proc_to_tasks.items():
     print(f"{proc_label}: {', '.join(tasks_list)}")
 
+
+unpredicted_to_subtask = defaultdict(list)
+
+for task in tasks:
+    if task.is_unpredicted:
+        label = f"UT{task.idx}"
+        for sub in task.unpredicted_subtasks:
+            unpredicted_to_subtask[label].append(f"T{sub.main_task_idx}_{sub.idx}")
+
+print("\n== Rozwiązanie zadań nieprzewidzianych ==")
+for unpredicted_list, sub_list in unpredicted_to_subtask.items():
+    print(f"{unpredicted_list}: {', '.join(sub_list)}")
+
+tast_to_substract = defaultdict(list)
+
+for task in tasks:
+    label = f"T{task.idx}"
+    for sub in task.subtasks:
+        tast_to_substract[label].append(f"T{sub.main_task_idx}_{sub.idx} ratio:{sub.ratio}")
+    if not task.subtasks:
+        tast_to_substract[label].append(label)
+
+print("\n== Podział zadań ==")
+for task_list, sub_list in tast_to_substract.items():
+    print(f"{task_list}: {', '.join(sub_list)}")
+
+
+print("\n== Przydział kanałów ==")
 used_proc_idxs = {int(label[2:]) for label in proc_to_tasks.keys()}
 for chann in channs:
     connected_procs = []
@@ -130,4 +159,4 @@ for chann in channs:
     if connected_procs:
         print(f"CHANN_{chann.idx}: {', '.join(connected_procs)}")
 
-#TODO iteracja ktora, czasy rozpoczesci kazdego zadania subzadania, jakie zad wykonuja zadanie nieprzewidziane
+#TODO iteracja ktora, czasy rozpoczesci kazdego zadania subzadania
