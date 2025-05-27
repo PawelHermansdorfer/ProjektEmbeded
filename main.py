@@ -15,12 +15,13 @@ MAX_SUBTASK_COUNT = 6
 SUBTASK_CONFIGURATION_SIZE = 3
 CONFIGURATIONS_PER_UT = 4
 
-np.random.seed(0)
-# np.random.seed()
+# np.random.seed(0)
+np.random.seed()
 
 
 (task_count, tasks), (proc_count, procs), (chann_count, channs) = read_graph_file('./data/test.txt')
 read_architecture_file(tasks, procs, channs, './data/architektura.txt')
+pprint(tasks)
 
 pp_procs = [proc for proc in procs if proc.is_multipurpose]
 pp_proc_count = len(pp_procs)
@@ -84,7 +85,7 @@ def limit_pos(x, idx):
     return result 
 
 max_iterations = 100
-population_size = 10
+population_size = 100
 best_fitness, best_solution, plot_data = gwo(max_iterations, population_size, init_population, fitness, limit_pos)
 
 for alpha_pos in plot_data['alpha_pos']:

@@ -60,8 +60,7 @@ def create_subtasks(tasks, tasks_to_split_count, min_ratio, min_subtask_count, m
 
     while tasks_to_split_count > 0:
         task = np.random.choice(options)
-        # TODO(Pawel Hermansdorfer): Crashes in get_time() but it shouldn't
-        # task.proc_idx = None
+        task.proc_idx = None
         options.remove(task)
 
         num_subtasks = np.random.randint(min_subtask_count, max_subtask_count)
