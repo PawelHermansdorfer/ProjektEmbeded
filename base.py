@@ -281,10 +281,12 @@ def read_graph_file(file_path):
 
             for child in split[2:]:
                 offset = 0 if not child[0].isalpha() else 1
-                child_idx = int(child[0 + offset])
-
+                idx_part = (offset, child.find('('))
+                child_idx = int(child[idx_part[0]: idx_part[1]])
                 task.children_idxs.append(child_idx)
-                task.children_costs.append(int(child[2 + offset: -1]))
+
+                child_cost = int(child[child.find('(') + 1: -1])
+                task.children_costs.append(child_cost)
                 tasks[child_idx].parents_idxs.append(task_idx)
 
         # PROCESSORS
