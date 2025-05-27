@@ -137,10 +137,10 @@ def get_cost(tasks, procs, channs):
     for proc in procs:
         for chann in channs:
             if proc.chann_connected[chann.idx] == 1 and tasks_per_proc[proc.idx] > 0:
-                if proc.is_multipurpose == 1: 
+                if proc.is_multipurpose == 1:
                     result += chann.cost
                 else:
-                    result += chann.cost * tasks_per_proc[proc_idx]
+                    result += chann.cost * tasks_per_proc[proc.idx]
     return result
 
 

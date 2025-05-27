@@ -6,7 +6,7 @@ from base import *
 from gwo import *
 
 
-TASKS_TO_SPLIT_COUNT = 3
+TASKS_TO_SPLIT_COUNT = 6
 MIN_SUBTASK_TO_MAIN_TASK_RATIO = 0.15
 MIN_SUBTASK_COUNT = 3
 MAX_SUBTASK_COUNT = 6
@@ -43,7 +43,6 @@ ut_task_count, ut_tasks = select_configurations_for_unpredicted_tasks(tasks, sub
 #               PP proc idx for N'th subtask
 #            ]
 # len(solution) = ut_count + subtask_count
-
 
 def apply_solution(solution):
     configuration_idxs = solution[:ut_task_count]
@@ -84,9 +83,9 @@ def limit_pos(x, idx):
         result = max(min(round(x), pp_proc_count-1), 0)
     return result 
 
-max_iterations = 50
+max_iterations = 100
 population_size = 10
-stop_after_stagnation = 5
+stop_after_stagnation = 15
 best_fitness, best_solution, plot_data, iterations = gwo(max_iterations, population_size, init_population, fitness, limit_pos, stop_after_stagnation)
 
 apply_solution(best_solution)
