@@ -12,6 +12,10 @@ Projekt polega na optymalizacji przydziału zadań nieprzewidzianych przy pomocy
 Uruchomienie:
 Projekt jest napisany w języku python 3.10, do uruchomienia potrzebny jest interpreter pythona oraz biblioteki NumPy, networkx oraz Matplotlib. Należy uruchomić plik main.py.
 
+python -m pip install matplotlib numpy networkx
+cd path/to/Projekt
+python ./main.py
+
 
 Przedstawienie pojedynczej instancji osobnika (wilka)
 # solution = [
