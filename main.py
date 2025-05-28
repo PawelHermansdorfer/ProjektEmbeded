@@ -14,13 +14,13 @@ MAX_SUBTASK_COUNT = 6
 SUBTASK_CONFIGURATION_SIZE = 3
 CONFIGURATIONS_PER_UT = 4
 
-np.random.seed(100)
-# np.random.seed()
+# np.random.seed(100)
+np.random.seed()
 
 
-(task_count, tasks), (proc_count, procs), (chann_count, channs) = read_graph_file('./data/test.txt')
+(task_count, tasks), (proc_count, procs), (chann_count, channs) = read_graph_file('./data/graf_2.txt')
 # draw_graph(tasks)
-read_architecture_file(tasks, procs, channs, './data/architektura.txt')
+read_architecture_file(tasks, procs, channs, './data/architektura_2.txt')
 
 pp_procs = [proc for proc in procs if proc.is_multipurpose]
 pp_proc_count = len(pp_procs)
