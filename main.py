@@ -1,9 +1,6 @@
 from collections import defaultdict
 import numpy as np
 
-# TODO(Pawel Hermansdorfer): remove pprint
-from pprint import pprint
-
 from base import *
 from gwo import *
 
@@ -17,7 +14,7 @@ MAX_SUBTASK_COUNT = 6
 SUBTASK_CONFIGURATION_SIZE = 3
 CONFIGURATIONS_PER_UT = 4
 
-np.random.seed(100) # 1 69
+np.random.seed(100)
 # np.random.seed()
 
 
