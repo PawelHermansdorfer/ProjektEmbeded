@@ -24,7 +24,7 @@ Działanie =====================================================================
 Uruchomienie ===========================================================================================================
 
 * umieść architekture w \data\architektura_1.txt                          (opcjonalne, domyślna architektura już tam jest)
-* umieść graf w \data\test_1.txt                                                  (opcjonalne, domyślny graf już tam jest)
+* umieść graf w \data\graf_1.txt                                                  (opcjonalne, domyślny graf już tam jest)
 * upewnij się, że na komputerze masz zainstalowane:
 ** interpreter Pythona w wersji 3.10
 ** biblioteke Numpy 2.2.0
